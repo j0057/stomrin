@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="/Imports">
+      <xsd:import schemaLocation="" />
+      <xsd:import schemaLocation="" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="" namespace="http://schemas.datacontract.org/2004/07/HHAMiddleTier" />
+      <xsd:import schemaLocation="" namespace="http://schemas.datacontract.org/2004/07/HHAMiddleTier.Dto.Kalender" />
+      <xsd:import schemaLocation="" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="Service1_ValidateAansluiting_InputMessage">
+    <wsdl:part name="parameters" element="ValidateAansluiting" />
+  </wsdl:message>
+  <wsdl:message name="Service1_ValidateAansluiting_OutputMessage">
+    <wsdl:part name="parameters" element="ValidateAansluitingResponse" />
+  </wsdl:message>
+  <wsdl:message name="Service1_ValidAdres_InputMessage">
+    <wsdl:part name="parameters" element="ValidAdres" />
+  </wsdl:message>
+  <wsdl:message name="Service1_ValidAdres_OutputMessage">
+    <wsdl:part name="parameters" element="ValidAdresResponse" />
+  </wsdl:message>
+  <wsdl:message name="Service1_GetKalenderJaren_InputMessage">
+    <wsdl:part name="parameters" element="GetKalenderJaren" />
+  </wsdl:message>
+  <wsdl:message name="Service1_GetKalenderJaren_OutputMessage">
+    <wsdl:part name="parameters" element="GetKalenderJarenResponse" />
+  </wsdl:message>
+  <wsdl:message name="Service1_GetKalender_InputMessage">
+    <wsdl:part name="parameters" element="GetKalender" />
+  </wsdl:message>
+  <wsdl:message name="Service1_GetKalender_OutputMessage">
+    <wsdl:part name="parameters" element="GetKalenderResponse" />
+  </wsdl:message>
+  <wsdl:portType name="Service1">
+    <wsdl:operation name="ValidateAansluiting">
+      <wsdl:input wsaw:Action="urn:Service1/ValidateAansluiting" message="Service1_ValidateAansluiting_InputMessage" />
+      <wsdl:output wsaw:Action="urn:Service1/ValidateAansluitingResponse" message="Service1_ValidateAansluiting_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ValidAdres">
+      <wsdl:input wsaw:Action="urn:Service1/ValidAdres" message="Service1_ValidAdres_InputMessage" />
+      <wsdl:output wsaw:Action="urn:Service1/ValidAdresResponse" message="Service1_ValidAdres_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetKalenderJaren">
+      <wsdl:input wsaw:Action="urn:Service1/GetKalenderJaren" message="Service1_GetKalenderJaren_InputMessage" />
+      <wsdl:output wsaw:Action="urn:Service1/GetKalenderJarenResponse" message="Service1_GetKalenderJaren_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetKalender">
+      <wsdl:input wsaw:Action="urn:Service1/GetKalender" message="Service1_GetKalender_InputMessage" />
+      <wsdl:output wsaw:Action="urn:Service1/GetKalenderResponse" message="Service1_GetKalender_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>

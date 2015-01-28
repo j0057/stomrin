@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="2ada4f8f-e60f-481e-aadb-5f06ef84ab08" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://pb-portals.omrin.nl:7980/burgerportal/ServiceKalender.svc/mex" Protocol="mex" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="service.wsdl" MetadataType="Wsdl" ID="49d97750-f634-4b8d-b778-e9ca8f31279b" SourceId="1" SourceUrl="http://pb-portals.omrin.nl:7980/burgerportal/ServiceKalender.svc/mex" />
+    <MetadataFile FileName="service1.wsdl" MetadataType="Wsdl" ID="1e89b93e-63fb-4110-bb98-d61653267237" SourceId="1" SourceUrl="http://pb-portals.omrin.nl:7980/burgerportal/ServiceKalender.svc/mex" />
+    <MetadataFile FileName="service.xsd" MetadataType="Schema" ID="596cff87-dde7-49ac-8368-a7b31087e7a0" SourceId="1" SourceUrl="http://pb-portals.omrin.nl:7980/burgerportal/ServiceKalender.svc/mex" />
+    <MetadataFile FileName="service1.xsd" MetadataType="Schema" ID="c557a9ec-99d5-4a57-a9e4-8b2fbe63d972" SourceId="1" SourceUrl="http://pb-portals.omrin.nl:7980/burgerportal/ServiceKalender.svc/mex" />
+    <MetadataFile FileName="HHAMiddleTier.xsd" MetadataType="Schema" ID="e51ef375-3097-4cf2-98be-532b3c02d123" SourceId="1" SourceUrl="http://pb-portals.omrin.nl:7980/burgerportal/ServiceKalender.svc/mex" />
+    <MetadataFile FileName="HHAMiddleTier.Dto.Kalender.xsd" MetadataType="Schema" ID="70d588a5-f6e9-4f0c-8758-fd0190e21caf" SourceId="1" SourceUrl="http://pb-portals.omrin.nl:7980/burgerportal/ServiceKalender.svc/mex" />
+    <MetadataFile FileName="Arrays.xsd" MetadataType="Schema" ID="60debfa3-9877-49ca-9626-5bdebb972fd0" SourceId="1" SourceUrl="http://pb-portals.omrin.nl:7980/burgerportal/ServiceKalender.svc/mex" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>
