@@ -1,6 +1,39 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title>Omrin HTML Afvalkalender</title>
+        <script>//<![CDATA[
+            var request = function(method, url) {
+                return new Promise(function(resolve, reject) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.onload = function() { 200 <= xhr.status && xhr.status < 300 ? resolve(xhr) : reject(xhr); };
+                    xhr.onerror = function() { reject(xhr); };
+                    xhr.open(method, url, true);
+                    xhr.send();
+                });
+            };
+            var checkJob = function() {
+                var f = document.querySelector('form');
+                request('HEAD', '?postcode=' + escape(f.postcode.value).replace('%20', '+')
+                              + '&huisnr=' + escape(f.huisnr.value) 
+                              + '&toevoeging=' + escape(f.toevoeging.value) 
+                              + '&jaar=' + escape(f.jaar.value))
+                    .then(function(xhr) { 
+                        if (xhr.status == 200) {
+                            window.location = xhr.responseURL;
+                        }
+                        else {
+                            window.setTimeout(checkJob, 2000);
+                        }
+                    })
+                    .catch(function(xhr) { console.log('error!', xhr); });
+            };
+            document.addEventListener('DOMContentLoaded', function(e) {
+                document.querySelector('#submit').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    checkJob();
+                });
+            });
+        //]]></script>
     </head>
     <body>
         <h1>Omrin HTML Afvalkalender</h1>
@@ -28,7 +61,7 @@
             </div>
 
             <div>
-                <button type="submit">Opvragen</button>
+                <button type="submit" id="submit">Opvragen</button>
             </div>
         </form>
     </body>
