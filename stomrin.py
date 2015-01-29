@@ -8,7 +8,7 @@ STOMRIN_DIR = os.environ.get('STOMRIN_DIR', '.')
 print 'STOMRIN_DIR:', STOMRIN_DIR
 
 class StomrinRoot(xhttp.Resource):
-    @xhttp.get({ 'postcode?': r'^[0-9]{4}\+[A-Za-z]{2}$',
+    @xhttp.get({ 'postcode?': r'^[0-9]{4}\+?[A-Za-z]{2}$',
                  'huisnr?': r'^[1-9][0-9]*$',
                  'toevoeging?': r'^[A-Za-z0-9]*$',
                  'jaar?': '^20[1-9][0-9]$' })
