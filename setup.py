@@ -4,7 +4,7 @@ import setuptools
 
 setuptools.setup(
     name="stomrin-web",
-    version="0.0.1",
+    version="1.0",
     author="Joost Molenaar",
     author_email="j.j.molenaar@gmail.com",
     install_requires=["xhttp"],
