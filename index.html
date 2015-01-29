@@ -11,26 +11,38 @@
                     xhr.send();
                 });
             };
-            var checkJob = function() {
-                var f = document.querySelector('form');
-                request('HEAD', '?postcode=' + escape(f.postcode.value).replace('%20', '+')
-                              + '&huisnr=' + escape(f.huisnr.value) 
-                              + '&toevoeging=' + escape(f.toevoeging.value) 
-                              + '&jaar=' + escape(f.jaar.value))
-                    .then(function(xhr) { 
-                        if (xhr.status == 200) {
-                            window.location = xhr.responseURL;
-                        }
-                        else {
-                            window.setTimeout(checkJob, 2000);
-                        }
-                    })
-                    .catch(function(xhr) { console.log('error!', xhr); });
+            var checkJob = function(method) {
+                return function() {
+                    var f = document.querySelector('form');
+                    request(method, '?postcode=' + escape(f.postcode.value).replace('%20', '+')
+                                  + '&huisnr=' + escape(f.huisnr.value)
+                                  + '&toevoeging=' + escape(f.toevoeging.value)
+                                  + '&jaar=' + escape(f.jaar.value))
+                        .then(function(xhr) {
+                            if (xhr.status == 200) {
+                                window.location = xhr.responseURL;
+                            }
+                            else {
+                                window.setTimeout(checkJob('HEAD'), 2000);
+                            }
+                        })
+                        .catch(function(xhr) {
+                            console.log('error!', xhr);
+                            if (xhr.responseText) {
+                                alert(xhr.responseText);
+                            }
+                            else {
+                                window.setTimeout(checkJob('GET'), 100);
+                            }
+                        });
+                };
             };
             document.addEventListener('DOMContentLoaded', function(e) {
                 document.querySelector('#submit').addEventListener('click', function(e) {
-                    e.preventDefault();
-                    checkJob();
+                    if (document.querySelector('form').checkValidity()) {
+                        e.preventDefault();
+                        checkJob('HEAD')();
+                    }
                 });
             });
         //]]></script>
