@@ -10,6 +10,19 @@ using System.Xml.Linq;
 
 namespace Stomrin
 {
+    static class Extensions
+    {
+        public static void Save(this IEnumerable<string> lines, string filename)
+        {
+            using (var stream = File.Create(filename))
+            using (var writer = new StreamWriter(stream))
+            foreach (var line in lines)
+            {
+                writer.WriteLine(line);
+            }
+        }
+    }
+
     class Program
     {
         static string[] MAAND = "Januari Februari Maart April Mei Juni Juli Augustus September Oktober November December".Split(' ');
@@ -79,22 +92,20 @@ namespace Stomrin
                 var htmlFilename = Path.ChangeExtension(filename, "html");
                 Console.WriteLine("Saving {0}", htmlFilename);
                 CreateHTML(jaar, aansluiting, kalender).Save(htmlFilename);
-
-                File.Delete(Path.ChangeExtension(filename, "acc"));
+            }
+            catch (ApplicationException e)
+            {
+                new List<string>() { e.Message }.Save(Path.ChangeExtension(filename, "err"));
             }
             catch (Exception e)
             {
-                var message = string.Format("{0}: {1}", e.GetType().FullName, e.Message);
-
-                Console.Error.WriteLine(message);
+                Console.Error.WriteLine(string.Format("{0}: {1}", e.GetType().FullName, e.Message));
                 Console.Error.WriteLine(e.StackTrace);
 
-                using (var stream = File.Create(Path.ChangeExtension(filename, "err")))
-                using (var writer = new StreamWriter(stream))
-                {
-                    writer.Write(message);
-                }
-
+                new List<string>() { "Server error" }.Save(Path.ChangeExtension(filename, "err"));
+            }
+            finally
+            {
                 File.Delete(Path.ChangeExtension(filename, "acc"));
             }
             Console.WriteLine("Job end: {0}", filename);
