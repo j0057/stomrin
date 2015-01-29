@@ -46,6 +46,10 @@
                         document.querySelector('#submit').disabled = true;
                     }
                 });
+
+                document.querySelector('form input[name=jaar]').min = 2010;
+                document.querySelector('form input[name=jaar]').max = (new Date()).getFullYear() + 1;
+                document.querySelector('form input[name=jaar]').value= (new Date()).getFullYear();
             });
         //]]></script>
         <style>
@@ -59,22 +63,30 @@
         <form method="get">
             <div>
                 <label for="postcode">Postcode</label>
-                <input name="postcode" type="text"/>
+                <input name="postcode" type="text"
+                       pattern="[0-9]{4} ?[a-zA-Z]{2}" minlength="6" maxlength="7"
+                       placeholder="1234 AB"
+                       title="Formaat: 4 cijfers gevolgd door 2 letters" />
             </div>
 
             <div>
                 <label for="huisnr">Huisnummer</label>
-                <input name="huisnr" type="number"/>
+                <input name="huisnr" type="number"
+                       minlength="1"
+                       placeholder="42" />
             </div>
 
             <div>
                 <label for="toevoeging">Toevoeging</label>
-                <input name="toevoeging"/>
+                <input name="toevoeging" type="text"
+                       pattern="[a-zA-Z0-9]*"
+                       placeholder="A"
+                       title="Formaat: letters en cijfers" />
             </div>
 
             <div>
                 <label for="jaar">Jaar</label>
-                <input name="jaar" type="number"/>
+                <input name="jaar" type="number" />
             </div>
 
             <div>
