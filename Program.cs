@@ -71,7 +71,7 @@ namespace Stomrin
 
                 GetKalender(postcode, huisnr, toevoeging, jaar, out aansluiting, out kalender);
 
-                if (aansluiting.AansluitingID == -1)
+                if (aansluiting.AansluitingID == -1 || kalender == null || kalender.Groepen == null)
                 {
                     throw new ApplicationException(string.Format("{0} {1}{2} niet gevonden", postcode, huisnr, toevoeging));
                 }
