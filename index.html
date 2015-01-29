@@ -34,6 +34,9 @@
                 });
             });
         //]]></script>
+        <style>
+            label { display: block; margin-top: 1em; }
+        </style>
     </head>
     <body>
         <h1>Omrin HTML Afvalkalender</h1>
@@ -41,26 +44,27 @@
 
         <form method="get">
             <div>
-                <label for="postcode">Postcode</label><br/>
+                <label for="postcode">Postcode</label>
                 <input name="postcode" type="text"/>
             </div>
 
             <div>
-                <label for="huisnr">Huisnummer</label><br/>
+                <label for="huisnr">Huisnummer</label>
                 <input name="huisnr" type="number"/>
             </div>
 
             <div>
-                <label for="toevoeging">Toevoeging</label><br/>
+                <label for="toevoeging">Toevoeging</label>
                 <input name="toevoeging"/>
             </div>
 
             <div>
-                <label for="jaar">Jaar</label><br/>
+                <label for="jaar">Jaar</label>
                 <input name="jaar" type="number"/>
             </div>
 
             <div>
+                <br/>
                 <button type="submit" id="submit">Opvragen</button>
             </div>
         </form>
