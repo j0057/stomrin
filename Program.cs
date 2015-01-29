@@ -53,9 +53,9 @@ namespace Stomrin
                     new XElement(x + "title", title),
                     new XElement(x + "meta", new XAttribute("name", "viewport"), new XAttribute("content", "width=device-width, initial-scale=1"))),
                 new XElement(x + "body",
-                    new XElement(x + "h1", title)),
+                    new XElement(x + "h1", title),
                     new XElement(x + "p", "Adres: ", adres),
-                    kalender.Groepen.Select(CreateHTMLCalendar));
+                    kalender.Groepen.Select(CreateHTMLCalendar)));
         }
 
         static void HandleJob(string filename, int jaar, string postcode, int huisnr, string toevoeging)
