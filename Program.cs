@@ -87,6 +87,7 @@ namespace Stomrin
                 var message = string.Format("{0}: {1}", e.GetType().FullName, e.Message);
 
                 Console.Error.WriteLine(message);
+                Console.Error.WriteLine(e.StackTrace);
 
                 using (var stream = File.Create(Path.ChangeExtension(filename, "err")))
                 using (var writer = new StreamWriter(stream))
