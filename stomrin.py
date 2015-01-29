@@ -37,9 +37,6 @@ class StomrinRoot(xhttp.Resource):
         else:
             return xhttp.serve_file('index.html', 'application/xhtml+xml')
 
-    def POST(self, req):
-        pass
-
 class StomrinRouter(xhttp.Router):
     def __init__(self):
         super(StomrinRouter, self).__init__(
