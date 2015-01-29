@@ -16,22 +16,23 @@ class StomrinRoot(xhttp.Resource):
         if req['x-get']['postcode'] and req['x-get']['huisnr'] and req['x-get']['jaar']:
             req['x-get']['postcode'] = req['x-get']['postcode'].replace(' ', '').lower()
             #print req['x-get']
-            basename = req['x-get']['jaar'] + '-' + req['x-get']['postcode'] + '-' + req['x-get']['huisnr']
+            basename = '-'.join([ req['x-get']['jaar'], req['x-get']['postcode'], req['x-get']['huisnr'] ])
+            basename = os.path.join(STOMRIN_DIR, basename)
             if req['x-get']['toevoeging']: basename += '-' + req['x-get']['toevoeging']
             #print `basename`
-            if os.path.exists(os.path.join(STOMRIN_DIR, basename) + '.plz'):
+            if os.path.exists(basename + '.plz'):
                 return { 'x-status': xhttp.status.ACCEPTED }
-            if os.path.exists(os.path.join(STOMRIN_DIR, basename) + '.acc'):
+            if os.path.exists(basename + '.acc'):
                 return { 'x-status': xhttp.status.ACCEPTED }
-            if os.path.exists(os.path.join(STOMRIN_DIR, basename) + '.err'):
-                with open(os.path.join(STOMRIN_DIR, basename) + '.err') as err:
+            if os.path.exists(basename + '.err'):
+                with open(basename + '.err') as err:
                     return { 'x-status': xhttp.status.NOT_FOUND,
                              'x-content': err.read(),
                              'content-type': 'text/plain' }
-            if os.path.exists(os.path.join(STOMRIN_DIR, basename) + '.html'):
+            if os.path.exists(basename + '.html'):
                 return { 'x-status': xhttp.status.SEE_OTHER,
                          'location': basename + '.html' }
-            with open(os.path.join(STOMRIN_DIR, basename) + '.plz', 'w'):
+            with open(basename + '.plz', 'w'):
                 return { 'x-status': xhttp.status.ACCEPTED }
         else:
             return xhttp.serve_file('index.html', 'application/xhtml+xml')
