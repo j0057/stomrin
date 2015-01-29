@@ -37,7 +37,7 @@ class StomrinRoot(xhttp.Resource):
             # job has ran before, so redirect to result
             if os.path.exists(basename + '.html'):
                 return { 'x-status': xhttp.status.SEE_OTHER,
-                         'location': basename + '.html' }
+                         'location': os.path.basename(basename) + '.html' }
 
             # start job and return 202
             with open(basename + '.plz', 'w'):
