@@ -10,8 +10,8 @@ print 'STOMRIN_DIR:', STOMRIN_DIR
 class StomrinRoot(xhttp.Resource):
     @xhttp.get({ 'postcode?': r'^[0-9]{4}\+[A-Za-z]{2}$',
                  'huisnr?': r'^[1-9][0-9]*$',
-                 'toevoeging?': r'[A-Za-z0-9]*',
-                 'jaar?': '2[0-9]{3}$' })
+                 'toevoeging?': r'^[A-Za-z0-9]*$',
+                 'jaar?': '^20[1-9][0-9]$' })
     def GET(self, req):
         if req['x-get']['postcode'] and req['x-get']['huisnr'] and req['x-get']['jaar']:
             req['x-get']['postcode'] = req['x-get']['postcode'].replace(' ', '').lower()
