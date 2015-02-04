@@ -68,7 +68,7 @@ namespace Stomrin
                     new XElement(x + "meta", new XAttribute("name", "viewport"), new XAttribute("content", "width=device-width, initial-scale=1"))),
                 new XElement(x + "body",
                     new XElement(x + "h1", title),
-                    new XElement(x + "p", "Adres: ", adres),
+                    new XElement(x + "p", adres),
                     kalender.Groepen.Select(CreateHTMLCalendar)));
         }
 
