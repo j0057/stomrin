@@ -72,6 +72,12 @@ namespace Stomrin
                     kalender.Groepen.Select(CreateHTMLCalendar)));
         }
 
+        static IEnumerable<string> CreateiCal(int jaar, Omrin.AansluitingValidatie aansluiting, Omrin.KalenderObject kalender)
+        {
+            yield return "BEGIN:VCALENDAR";
+            yield return "END:VCALENDAR";
+        }
+
         static void HandleJob(string filename, int jaar, string postcode, int huisnr, string toevoeging)
         {
             Console.WriteLine("Job start: {0}", filename);
@@ -90,6 +96,9 @@ namespace Stomrin
                     throw new ApplicationException(string.Format("{0} {1}{2} niet gevonden", postcode, huisnr, toevoeging));
                 }
 
+                var icalFilename = Path.ChangeExtension(filename, "ics");
+                Console.WriteLine("Saving {0}", icalFilename);
+                
                 var htmlFilename = Path.ChangeExtension(filename, "html");
                 Console.WriteLine("Saving {0}", htmlFilename);
                 CreateHTML(jaar, aansluiting, kalender).Save(htmlFilename);
