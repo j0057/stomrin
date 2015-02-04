@@ -12,13 +12,17 @@ namespace Stomrin
 {
     static class Extensions
     {
-        public static void Save(this IEnumerable<string> lines, string filename)
+        public static void Save(this IEnumerable<string> lines, string filename, string newline = "\n")
         {
             using (var stream = File.Create(filename))
-            using (var writer = new StreamWriter(stream))
-            foreach (var line in lines)
             {
-                writer.WriteLine(line);
+                using (var writer = new StreamWriter(stream) { NewLine = newline })
+                {
+                    foreach (var line in lines)
+                    {
+                        writer.WriteLine(line);
+                    }
+                }
             }
         }
     }
