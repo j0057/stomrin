@@ -25,6 +25,39 @@ namespace Stomrin
                 }
             }
         }
+
+        public static IEnumerable<T> AddItems<T>(this IEnumerable<T> self, params T[] items)
+        {
+            return self.Concat(items);
+        }
+
+        public static DateTime SetTime(this DateTime self, int h, int m, int s, int ms)
+        {
+            return new DateTime(self.Year, self.Month, self.Day, h, m, s, ms, DateTimeKind.Local);
+        }
+
+        public static string ToISOString(this DateTime self)
+        {
+            return string.Format("{0:0000}{1:00}{2:00}T{3:00}{4:00}{5:00}", self.Year, self.Month, self.Day, self.Hour, self.Minute, self.Second);
+        }
+
+        public static string iCalendarEscape(this string self)
+        {
+            return self
+                .Replace("\\", "\\\\")
+                .Replace(";", "\\;")
+                .Replace(",", "\\,")
+                .Replace("\n", "\\n");
+        }
+
+        public static IEnumerable<string> iCalendarFoldLine(this string self)
+        {
+            yield return self.Substring(0, Math.Min(75, self.Length));
+            for (var i = 75; i < self.Length; i += 74)
+            {
+                yield return " " + self.Substring(i, Math.Min(i + 74, self.Length)-i);
+            }
+        }
     }
 
     class Program
@@ -36,10 +69,10 @@ namespace Stomrin
         static void GetKalender(string postcode, int huisnummer, string toevoeging, int jaar, out Omrin.AansluitingValidatie aansluiting, out Omrin.KalenderObject kalender)
         {
             var client = new Omrin.Service1Client() as Omrin.Service1;
-            
+
             Console.WriteLine("ValidateAansluiting {0},{1},{2}", postcode, huisnummer, toevoeging);
             aansluiting = client.ValidateAansluiting(postcode, huisnummer, toevoeging);
-            
+
             Console.WriteLine("GetKalender {0},{1}", aansluiting.AansluitingID, jaar);
             kalender = client.GetKalender(aansluiting.AansluitingID, jaar);
         }
@@ -76,10 +109,55 @@ namespace Stomrin
                     kalender.Groepen.Select(CreateHTMLCalendar)));
         }
 
-        static IEnumerable<string> CreateiCal(int jaar, Omrin.AansluitingValidatie aansluiting, Omrin.KalenderObject kalender)
+        static IEnumerable<string> CreateCalendarEvent(int sequence, string summary, string description, string location, DateTime start, DateTime end)
         {
-            yield return "BEGIN:VCALENDAR";
-            yield return "END:VCALENDAR";
+            /* BEGIN:VEVENT
+             * DTSTART:20150207T210500Z
+             * DTEND:20150207T211000Z
+             * DTSTAMP:20150204T133100Z
+             * UID:testcal-2@stomrin.nl
+             * CREATED:20150129T204608Z
+             * DESCRIPTION:Test event 2 description
+             * LOCATION:Zaailand 16\, Leeuwarden
+             * SEQUENCE:1
+             * SUMMARY:Test event 2
+             * END:VEVENT
+             */
+            return Enumerable.Empty<string>()
+                .AddItems(
+                    "BEGIN:VEVENT",
+                    string.Format("SEQUENCE:{0}", sequence),
+                    string.Format("UID:{0}-{1}-{2}@stomrin.nl", location.ToLower().Replace(" ", "-").Replace(",", ""), start.Year, sequence),
+                    string.Format("DTSTART;TZID=Europe/Amsterdam:{0}", start.ToISOString()),
+                    string.Format("DTEND;TZID=Europe/Amsterdam:{0}", end.ToISOString()),
+                    string.Format("DTSTAMP;TZID=Europe/Amsterdam:{0}", start.ToISOString()))
+                .Concat(("SUMMARY:" + summary.iCalendarEscape()).iCalendarFoldLine())
+                .Concat(("DESCRIPTION:" + description.iCalendarEscape()).iCalendarFoldLine())
+                .AddItems("END:VEVENT");
+        }
+
+        static IEnumerable<string> CreateCalendar(int jaar, Omrin.AansluitingValidatie aansluiting, Omrin.KalenderObject kalender)
+        {
+            var codes = "GCP GFT PAP KCA GRF".Split();
+            var adres = string.Format("{0} {1}{2}, {3}", aansluiting.Straat, aansluiting.Huistnummer, aansluiting.Toevoeging, aansluiting.Woonplaats);
+            return Enumerable.Empty<string>()
+                .AddItems(
+                    "BEGIN:VCALENDAR",
+                    "VERSION:2.0",
+                    "CALSCALE:GREGORIAN")
+                .Concat(kalender.Groepen
+                    .Where(kg => codes.Contains(kg.Afbeelding))
+                    .SelectMany(
+                        kg => kg.Datums,
+                        (kg, kgd) => Tuple.Create(
+                            kg,
+                              kg.Afbeelding == "GCP" ? kgd.Datum.SetTime(7, 30, 0, 0)
+                            : kg.Afbeelding == "GFT" ? kgd.Datum.SetTime(7, 30, 0, 0)
+                            : kg.Afbeelding == "PAP" ? kgd.Datum.SetTime(17, 30, 0, 0)
+                            : kgd.Datum))
+                    .OrderBy(e => e.Item2)
+                    .SelectMany((e,i) => CreateCalendarEvent(i, e.Item1.Omschrijvging, e.Item1.Info, adres, e.Item2, e.Item2.AddHours(1))))
+                .AddItems("END:VCALENDAR");
         }
 
         static void HandleJob(string filename, int jaar, string postcode, int huisnr, string toevoeging)
@@ -102,7 +180,8 @@ namespace Stomrin
 
                 var icalFilename = Path.ChangeExtension(filename, "ics");
                 Console.WriteLine("Saving {0}", icalFilename);
-                
+                CreateCalendar(jaar, aansluiting, kalender).Save(icalFilename, newline: "\r\n");
+
                 var htmlFilename = Path.ChangeExtension(filename, "html");
                 Console.WriteLine("Saving {0}", htmlFilename);
                 CreateHTML(jaar, aansluiting, kalender).Save(htmlFilename);
