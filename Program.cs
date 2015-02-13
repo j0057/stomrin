@@ -143,8 +143,10 @@ namespace Stomrin
             return Enumerable.Empty<string>()
                 .AddItems(
                     "BEGIN:VCALENDAR",
-                    "VERSION:2.0",
-                    "CALSCALE:GREGORIAN")
+                    "VERSION:2.0")
+                .Concat(string.Format("X-WR-CALNAME:Afvalkalender {0}", jaar).iCalendarFoldLine())
+                .Concat(string.Format("X-WR-CALDESC:{0}", adres.iCalendarEscape()).iCalendarFoldLine())
+                .AddItems("CALSCALE:GREGORIAN")
                 .Concat(kalender.Groepen
                     .Where(kg => codes.Contains(kg.Afbeelding))
                     .SelectMany(
