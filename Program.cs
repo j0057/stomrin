@@ -179,10 +179,7 @@ namespace Stomrin
                 File.Create(Path.ChangeExtension(filename, "acc")).Dispose();
                 File.Delete(filename);
 
-                Omrin.AansluitingValidatie aansluiting;
-                Omrin.KalenderObject kalender;
-
-                GetKalender(postcode, huisnr, toevoeging, jaar, out aansluiting, out kalender);
+                GetKalender(postcode, huisnr, toevoeging, jaar, out Omrin.AansluitingValidatie aansluiting, out Omrin.KalenderObject kalender);
 
                 if (aansluiting.AansluitingID == -1 || kalender == null || kalender.Groepen == null)
                 {
