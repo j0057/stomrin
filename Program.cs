@@ -102,7 +102,7 @@ namespace Stomrin
                             new XElement(x + "td", string.Join(", ", g.OrderBy(d => d.Datum.Day).Select(d => d.Datum.Day))))))) ;
         }
 
-        static XElement CreateHTML(int jaar, Omrin.AansluitingValidatie aansluiting, Omrin.KalenderObject kalender)
+        static XElement CreateHTML(int jaar, Omrin.AansluitingValidatie aansluiting, Omrin.KalenderObject kalender, string icalFilename)
         {
             var x = (XNamespace)"http://www.w3.org/1999/xhtml";
             var title = string.Format("Afvalkalender {0}", jaar);
@@ -114,6 +114,9 @@ namespace Stomrin
                 new XElement(x + "body",
                     new XElement(x + "h1", title),
                     new XElement(x + "p", adres),
+                    new XElement(x + "p",
+                        "Link naar iCal bestand om toe te voegen in Google/Outlook/iCloud/Android:",
+                        new XElement(x + "a", new XAttribute("href", icalFilename), icalFilename)),
                     kalender.Groepen.Select(CreateHTMLCalendar)));
         }
 
@@ -192,7 +195,7 @@ namespace Stomrin
 
                 var htmlFilename = Path.ChangeExtension(filename, "html");
                 Console.WriteLine("Saving {0}", htmlFilename);
-                CreateHTML(jaar, aansluiting, kalender).Save(htmlFilename);
+                CreateHTML(jaar, aansluiting, kalender, Path.GetFileName(icalFilename)).Save(htmlFilename);
             }
             catch (ApplicationException e)
             {
