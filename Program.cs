@@ -146,7 +146,6 @@ namespace Stomrin
 
         static IEnumerable<string> CreateCalendar(int jaar, Omrin.AansluitingValidatie aansluiting, Omrin.KalenderObject kalender)
         {
-            var codes = "GCP GFT PAP KCA GRF".Split();
             var adres = string.Format("{0} {1}{2}, {3}", aansluiting.Straat, aansluiting.Huistnummer, aansluiting.Toevoeging, aansluiting.Woonplaats);
             return Enumerable.Empty<string>()
                 .AddItems(
@@ -156,7 +155,6 @@ namespace Stomrin
                 .Concat(string.Format("X-WR-CALDESC:{0}", adres.iCalendarEscape()).iCalendarFoldLine())
                 .AddItems("CALSCALE:GREGORIAN")
                 .Concat(kalender.Groepen
-                    .Where(kg => codes.Contains(kg.Afbeelding))
                     .SelectMany(
                         kg => kg.Datums,
                         (kg, kgd) => Tuple.Create(
