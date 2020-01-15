@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Stomrin": {
+      "commandName": "Project",
+      "commandLineArgs": ".",
+      "environmentVariables": {
+        "STOMRIN_WATCH_DIR": ".",
+        "STOMRIN_SERVICE_URL": "http://127.0.0.1:7980/burgerportal/ServiceKalender.svc"
+      }
+    }
+  }
+}
