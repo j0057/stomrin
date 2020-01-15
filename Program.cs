@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.ServiceModel;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -13,6 +14,8 @@ namespace Stomrin
     static class Configuration
     {
         public static string WATCH_DIR => Environment.GetEnvironmentVariable("STOMRIN_WATCH_DIR");
+
+        public static string SERVICE_URL => Environment.GetEnvironmentVariable("STOMRIN_SERVICE_URL");
     }
 
     static class Extensions
@@ -73,7 +76,7 @@ namespace Stomrin
 
         static void GetKalender(string postcode, int huisnummer, string toevoeging, int jaar, out Omrin.AansluitingValidatie aansluiting, out Omrin.KalenderObject kalender)
         {
-            var client = new Omrin.Service1Client() as Omrin.Service1;
+            var client = new Omrin.Service1Client(Omrin.Service1Client.EndpointConfiguration.CustomBinding_Service1, Configuration.SERVICE_URL) as Omrin.Service1;
 
             Console.WriteLine("ValidateAansluiting {0},{1},{2}", postcode, huisnummer, toevoeging);
             aansluiting = client.ValidateAansluiting(postcode, huisnummer, toevoeging);
