@@ -10,6 +10,11 @@ using System.Xml.Linq;
 
 namespace Stomrin
 {
+    static class Configuration
+    {
+        public static string WATCH_DIR => Environment.GetEnvironmentVariable("STOMRIN_WATCH_DIR");
+    }
+
     static class Extensions
     {
         public static void Save(this IEnumerable<string> lines, string filename, string newline = "\n")
@@ -206,11 +211,11 @@ namespace Stomrin
             Console.WriteLine("Job end: {0}", filename);
         }
 
-        static void WatchDirectory(string path)
+        static void WatchDirectory()
         {
             while (true)
             {
-                Directory.GetFiles(path)
+                Directory.GetFiles(Configuration.WATCH_DIR)
                     .Select(filename => Tuple.Create(filename, I_CAN_HAS_JOB_PLZ.Match(Path.GetFileName(filename))))
                     .Where(t => t.Item2.Success)
                     .ToList()
@@ -226,7 +231,7 @@ namespace Stomrin
 
         static void Main(string[] args)
         {
-            WatchDirectory(args[0]);
+            WatchDirectory();
         }
     }
 }
