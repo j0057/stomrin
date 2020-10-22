@@ -73,15 +73,24 @@ namespace Stomrin
 
         static Regex I_CAN_HAS_JOB_PLZ = new Regex(@"^(\d{4})-(\d{4})([a-z]{2})-(\d+)(-([a-z0-9]+))?\.plz$");
 
-        static void GetKalender(string postcode, int huisnummer, string toevoeging, int jaar, out Omrin.AansluitingValidatie aansluiting, out Omrin.KalenderObject kalender)
+        static (Omrin.AansluitingValidatie, Omrin.KalenderObject) GetKalender(string filename, string postcode, int huisnummer, string toevoeging, int jaar)
         {
             var client = new Omrin.Service1Client(Omrin.Service1Client.EndpointConfiguration.CustomBinding_Service1, Configuration.SERVICE_URL) as Omrin.Service1;
 
-            Console.WriteLine("ValidateAansluiting {0},{1},{2}", postcode, huisnummer, toevoeging);
-            aansluiting = client.ValidateAansluiting(postcode, huisnummer, toevoeging);
+            Console.WriteLine($"{filename}: ValidateAansluiting {postcode} {huisnummer} {toevoeging}");
+            var aansluiting = client.ValidateAansluiting(postcode, huisnummer, toevoeging);
 
-            Console.WriteLine("GetKalender {0},{1}", aansluiting.AansluitingID, jaar);
-            kalender = client.GetKalender(aansluiting.AansluitingID, jaar);
+            Console.WriteLine($"{filename}: aansluitingID {aansluiting.AansluitingID} is {aansluiting.Straat} {aansluiting.Huistnummer}{aansluiting.Toevoeging} in {aansluiting.Woonplaats}");
+
+            Console.WriteLine($"{filename}: GetKalender {aansluiting.AansluitingID} {jaar}");
+            var kalender = client.GetKalender(aansluiting.AansluitingID, jaar);
+
+            if (aansluiting.AansluitingID == -1 || kalender == null || kalender.Groepen == null)
+            {
+                throw new ApplicationException($"{postcode} {huisnummer}{toevoeging} niet gevonden");
+            }
+
+            return (aansluiting, kalender);
         }
 
         static XElement CreateHTMLCalendar(Omrin.KalenderGroepObject kalenderGroep)
@@ -172,46 +181,47 @@ namespace Stomrin
 
         static void HandleJob(string filename, int jaar, string postcode, int huisnr, string toevoeging)
         {
-            Console.WriteLine("Job start: {0}", filename);
+            Console.WriteLine($"{filename}: starting");
+
+            var acceptFilename = Path.ChangeExtension(filename, "acc");
+            var errorFilename = Path.ChangeExtension(filename, "err");
+            var icalFilename = Path.ChangeExtension(filename, "ics");
+            var htmlFilename = Path.ChangeExtension(filename, "html");
+
             try
             {
-                File.Create(Path.ChangeExtension(filename, "acc")).Dispose();
+                File.Create(acceptFilename).Dispose();
                 File.Delete(filename);
 
-                GetKalender(postcode, huisnr, toevoeging, jaar, out Omrin.AansluitingValidatie aansluiting, out Omrin.KalenderObject kalender);
+                var (aansluiting, kalender) = GetKalender(filename, postcode, huisnr, toevoeging, jaar);
 
-                if (aansluiting.AansluitingID == -1 || kalender == null || kalender.Groepen == null)
-                {
-                    throw new ApplicationException(string.Format("{0} {1}{2} niet gevonden", postcode, huisnr, toevoeging));
-                }
-
-                var icalFilename = Path.ChangeExtension(filename, "ics");
-                Console.WriteLine("Saving {0}", icalFilename);
+                Console.WriteLine($"{filename}: saving {icalFilename}");
                 CreateICS(jaar, aansluiting, kalender)
                     .SelectMany(line => line.iCalendarFoldLine())
                     .Save(icalFilename, newline: "\r\n");
 
-                var htmlFilename = Path.ChangeExtension(filename, "html");
-                Console.WriteLine("Saving {0}", htmlFilename);
+                Console.WriteLine($"{filename}: saving {htmlFilename}");
                 CreateHTML(jaar, aansluiting, kalender, Path.GetFileName(icalFilename))
                     .Save(htmlFilename);
             }
             catch (ApplicationException e)
             {
-                new List<string>() { e.Message }.Save(Path.ChangeExtension(filename, "err"));
+                Console.Error.WriteLine($"{filename}: application error -- {e.Message}");
+
+                new[] { e.Message }.Save(errorFilename);
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine(string.Format("{0}: {1}", e.GetType().FullName, e.Message));
+                Console.Error.WriteLine($"{filename}: {e.GetType().FullName}: {e.Message}");
                 Console.Error.WriteLine(e.StackTrace);
 
-                new List<string>() { "Server error" }.Save(Path.ChangeExtension(filename, "err"));
+                new[] { "Server error" }.Save(errorFilename);
             }
             finally
             {
-                File.Delete(Path.ChangeExtension(filename, "acc"));
+                File.Delete(acceptFilename);
             }
-            Console.WriteLine("Job end: {0}", filename);
+            Console.WriteLine($"{filename}: done");
         }
 
         static FileSystemWatcher CreateWatcher()
