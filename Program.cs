@@ -144,11 +144,12 @@ namespace Stomrin
              */
 
             var sequence = 0;
+            var adres = $"{aansluiting.Straat} {aansluiting.Huistnummer}{aansluiting.Toevoeging}, {aansluiting.Woonplaats}".iCalendarEscape();
 
             yield return $"BEGIN:VCALENDAR";
             yield return $"VERSION:2.0";
             yield return $"X-WR-CALNAME:Afvalkalender {jaar}";
-            yield return $"X-WR-CALDESC:{aansluiting.Straat} {aansluiting.Huistnummer}{aansluiting.Toevoeging}, {aansluiting.Woonplaats}";
+            yield return $"X-WR-CALDESC:{adres}";
             yield return $"CALSCALE:GREGORIAN";
 
             foreach (var groep in kalender.Groepen)
@@ -171,8 +172,8 @@ namespace Stomrin
                     yield return $"DTSTART;TZID=Europe/Amsterdam:{time.ToISOString()}";
                     yield return $"DTEND;TZID=Europe/Amsterdam:{time.AddHours(1).ToISOString()}";
                     yield return $"DTSTAMP;TZID=Europe/Amsterdam:{time.ToISOString()}";
-                    yield return $"SUMMARY:{groep.Omschrijvging}";
-                    yield return $"DESCRIPTION:{groep.Info.Replace("\r", "").Replace("\n", "")}";
+                    yield return $"SUMMARY:{groep.Omschrijvging.iCalendarEscape()}";
+                    yield return $"DESCRIPTION:{groep.Info.Replace("\r", "").Replace("\n", "").iCalendarEscape()}";
                     yield return $"END:VEVENT";
                 }
             }
