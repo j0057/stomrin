@@ -214,22 +214,28 @@ namespace Stomrin
             Console.WriteLine("Job end: {0}", filename);
         }
 
-        static void WatchDirectory()
+        static FileSystemWatcher CreateWatcher()
         {
-            while (true)
+            var watcher = new FileSystemWatcher(Configuration.WATCH_DIR);
+
+            watcher.Created += (s, e) =>
             {
-                Directory.GetFiles(Configuration.WATCH_DIR)
-                    .Select(filename => Tuple.Create(filename, I_CAN_HAS_JOB_PLZ.Match(Path.GetFileName(filename))))
-                    .Where(t => t.Item2.Success)
-                    .ToList()
-                    .ForEach(t => HandleJob(
-                        filename: t.Item1,
-                        jaar: int.Parse(t.Item2.Groups[1].Value),
-                        postcode: t.Item2.Groups[2].Value + " " + t.Item2.Groups[3].Value.ToUpper(),
-                        huisnr: int.Parse(t.Item2.Groups[4].Value),
-                        toevoeging: t.Item2.Groups[6].Value));
-                Thread.Sleep(100);
-            }
+                var filename = Path.GetFileName(e.FullPath);
+                var match = I_CAN_HAS_JOB_PLZ.Match(filename);
+                if (match.Success)
+                {
+                    HandleJob(
+                        filename: e.FullPath,
+                        jaar: int.Parse(match.Groups[1].Value),
+                        postcode: $"{match.Groups[2].Value} {match.Groups[3].Value.ToUpper()}",
+                        huisnr: int.Parse(match.Groups[4].Value),
+                        toevoeging: match.Groups[6].Value);
+                }
+            };
+
+            watcher.EnableRaisingEvents = true;
+
+            return watcher;
         }
 
         static void Main(string[] args)
@@ -237,7 +243,11 @@ namespace Stomrin
             Console.WriteLine("Stomrin worker starting");
             Console.WriteLine($"Watch dir: {Configuration.WATCH_DIR}");
             Console.WriteLine($"Service URL: {Configuration.SERVICE_URL}");
-            WatchDirectory();
+
+            using (var watcher = CreateWatcher())
+            {
+                Thread.Sleep(Timeout.Infinite);
+            }
         }
     }
 }
