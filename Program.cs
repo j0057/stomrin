@@ -10,9 +10,11 @@ namespace Stomrin
 {
     static class Configuration
     {
-        public static string WATCH_DIR => Environment.GetEnvironmentVariable("STOMRIN_WATCH_DIR");
+        public static string WATCH_DIR => Environment.GetEnvironmentVariable("STOMRIN_WATCH_DIR")
+            ?? ".";
 
-        public static string SERVICE_URL => Environment.GetEnvironmentVariable("STOMRIN_SERVICE_URL");
+        public static string SERVICE_URL => Environment.GetEnvironmentVariable("STOMRIN_SERVICE_URL")
+            ?? "http://pb-portals.omrin.nl:7980/burgerportal/ServiceKalender.svc";
     }
 
     static class Extensions
