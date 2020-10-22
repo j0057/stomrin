@@ -119,7 +119,7 @@ namespace Stomrin
                     kalender.Groepen.Select(CreateHTMLCalendar)));
         }
 
-        static IEnumerable<string> CreateCalendarEvent(int sequence, string summary, string description, string location, DateTime start, DateTime end)
+        static IEnumerable<string> CreateICS(int jaar, Omrin.AansluitingValidatie aansluiting, Omrin.KalenderObject kalender)
         {
             /* BEGIN:VEVENT
              * DTSTART:20150207T210500Z
@@ -133,41 +133,41 @@ namespace Stomrin
              * SUMMARY:Test event 2
              * END:VEVENT
              */
-            return Enumerable.Empty<string>()
-                .AddItems(
-                    "BEGIN:VEVENT",
-                    string.Format("SEQUENCE:{0}", sequence),
-                    string.Format("UID:{0}-{1}-{2}@stomrin.nl", location.ToLower().Replace(" ", "-").Replace(",", ""), start.Year, sequence),
-                    string.Format("DTSTART;TZID=Europe/Amsterdam:{0}", start.ToISOString()),
-                    string.Format("DTEND;TZID=Europe/Amsterdam:{0}", end.ToISOString()),
-                    string.Format("DTSTAMP;TZID=Europe/Amsterdam:{0}", start.ToISOString()))
-                .Concat(("SUMMARY:" + summary.iCalendarEscape()).iCalendarFoldLine())
-                .Concat(("DESCRIPTION:" + description.iCalendarEscape()).iCalendarFoldLine())
-                .AddItems("END:VEVENT");
-        }
 
-        static IEnumerable<string> CreateCalendar(int jaar, Omrin.AansluitingValidatie aansluiting, Omrin.KalenderObject kalender)
-        {
-            var adres = string.Format("{0} {1}{2}, {3}", aansluiting.Straat, aansluiting.Huistnummer, aansluiting.Toevoeging, aansluiting.Woonplaats);
-            return Enumerable.Empty<string>()
-                .AddItems(
-                    "BEGIN:VCALENDAR",
-                    "VERSION:2.0")
-                .Concat(string.Format("X-WR-CALNAME:Afvalkalender {0}", jaar).iCalendarFoldLine())
-                .Concat(string.Format("X-WR-CALDESC:{0}", adres.iCalendarEscape()).iCalendarFoldLine())
-                .AddItems("CALSCALE:GREGORIAN")
-                .Concat(kalender.Groepen
-                    .SelectMany(
-                        kg => kg.Datums,
-                        (kg, kgd) => Tuple.Create(
-                            kg,
-                              kg.Afbeelding == "GCP" ? kgd.Datum.SetTime(7, 30, 0, 0)
-                            : kg.Afbeelding == "GFT" ? kgd.Datum.SetTime(7, 30, 0, 0)
-                            : kg.Afbeelding == "PAP" ? kgd.Datum.SetTime(17, 30, 0, 0)
-                            : kgd.Datum))
-                    .OrderBy(e => e.Item2)
-                    .SelectMany((e,i) => CreateCalendarEvent(i, e.Item1.Omschrijvging, e.Item1.Info, adres, e.Item2, e.Item2.AddHours(1))))
-                .AddItems("END:VCALENDAR");
+            var sequence = 0;
+
+            yield return $"BEGIN:VCALENDAR";
+            yield return $"VERSION:2.0";
+            yield return $"X-WR-CALNAME:Afvalkalender {jaar}";
+            yield return $"X-WR-CALDESC:{aansluiting.Straat} {aansluiting.Huistnummer}{aansluiting.Toevoeging}, {aansluiting.Woonplaats}";
+            yield return $"CALSCALE:GREGORIAN";
+
+            foreach (var groep in kalender.Groepen)
+            {
+                var datums = groep.Datums ?? Enumerable.Empty<Omrin.KalenderGroepDatum>();
+
+                // XXX: i used to sort events by date, does it really matter?
+                foreach (var datum in datums)
+                {
+                    // XXX: these codes lead to churn ... better to detect times in description field?
+                    var time = groep.Afbeelding == "SOR" ? datum.Datum.SetTime(7, 30, 0, 0)
+                             : groep.Afbeelding == "BIO" ? datum.Datum.SetTime(7, 30, 0, 0)
+                             : groep.Afbeelding == "EGF" ? datum.Datum.SetTime(7, 30, 0, 0)
+                             : groep.Afbeelding == "PAP" ? datum.Datum.SetTime(17, 30, 0, 0)
+                             : datum.Datum;
+
+                    yield return $"BEGIN:VEVENT";
+                    yield return $"SEQUENCE:{++sequence}";
+                    yield return $"UID:{aansluiting.AansluitingID}-{jaar}-{sequence}@stomrin.nl";
+                    yield return $"DTSTART;TZID=Europe/Amsterdam:{time.ToISOString()}";
+                    yield return $"DTEND;TZID=Europe/Amsterdam:{time.AddHours(1).ToISOString()}";
+                    yield return $"DTSTAMP;TZID=Europe/Amsterdam:{time.ToISOString()}";
+                    yield return $"SUMMARY:{groep.Omschrijvging}";
+                    yield return $"DESCRIPTION:{groep.Info.Replace("\r", "").Replace("\n", "")}";
+                    yield return $"END:VEVENT";
+                }
+            }
+            yield return $"END:VCALENDAR";
         }
 
         static void HandleJob(string filename, int jaar, string postcode, int huisnr, string toevoeging)
@@ -187,11 +187,14 @@ namespace Stomrin
 
                 var icalFilename = Path.ChangeExtension(filename, "ics");
                 Console.WriteLine("Saving {0}", icalFilename);
-                CreateCalendar(jaar, aansluiting, kalender).Save(icalFilename, newline: "\r\n");
+                CreateICS(jaar, aansluiting, kalender)
+                    .SelectMany(line => line.iCalendarFoldLine())
+                    .Save(icalFilename, newline: "\r\n");
 
                 var htmlFilename = Path.ChangeExtension(filename, "html");
                 Console.WriteLine("Saving {0}", htmlFilename);
-                CreateHTML(jaar, aansluiting, kalender, Path.GetFileName(icalFilename)).Save(htmlFilename);
+                CreateHTML(jaar, aansluiting, kalender, Path.GetFileName(icalFilename))
+                    .Save(htmlFilename);
             }
             catch (ApplicationException e)
             {
