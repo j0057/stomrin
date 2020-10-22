@@ -33,11 +33,6 @@ namespace Stomrin
             }
         }
 
-        public static IEnumerable<T> AddItems<T>(this IEnumerable<T> self, params T[] items)
-        {
-            return self.Concat(items);
-        }
-
         public static DateTime SetTime(this DateTime self, int h, int m, int s, int ms)
         {
             return new DateTime(self.Year, self.Month, self.Day, h, m, s, ms, DateTimeKind.Local);
