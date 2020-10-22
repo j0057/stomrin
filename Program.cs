@@ -231,6 +231,9 @@ namespace Stomrin
 
         static void Main(string[] args)
         {
+            Console.WriteLine("Stomrin worker starting");
+            Console.WriteLine($"Watch dir: {Configuration.WATCH_DIR}");
+            Console.WriteLine($"Service URL: {Configuration.SERVICE_URL}");
             WatchDirectory();
         }
     }
