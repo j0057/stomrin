@@ -110,14 +110,13 @@ namespace Stomrin
         static XElement CreateHTML(int jaar, Omrin.AansluitingValidatie aansluiting, Omrin.KalenderObject kalender, string icalFilename)
         {
             var x = (XNamespace)"http://www.w3.org/1999/xhtml";
-            var adres = string.Format("{0} {1}{2}, {3}", aansluiting.Straat, aansluiting.Huistnummer, aansluiting.Toevoeging, aansluiting.Woonplaats);
             return new XElement(x + "html",
                 new XElement(x + "head",
                     new XElement(x + "title", $"Afvalkalender {jaar}"),
                     new XElement(x + "meta", new XAttribute("name", "viewport"), new XAttribute("content", "width=device-width, initial-scale=1"))),
                 new XElement(x + "body",
                     new XElement(x + "h1", $"Afvalkalender {jaar}"),
-                    new XElement(x + "p", adres),
+                    new XElement(x + "p", $"{aansluiting.Straat} {aansluiting.Huistnummer}{aansluiting.Toevoeging}, {aansluiting.Postcode} {aansluiting.Woonplaats}"),
                     new XElement(x + "p",
                         "Link naar iCal bestand om toe te voegen in Google/Outlook/iCloud/Android: ",
                         new XElement(x + "a", new XAttribute("href", icalFilename), icalFilename)),
