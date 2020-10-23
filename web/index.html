@@ -1,0 +1,98 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Omrin HTML Afvalkalender</title>
+        <script>//<![CDATA[
+            var request = function(method, url) {
+                return new Promise(function(resolve, reject) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.onload = function() { 200 <= xhr.status && xhr.status < 300 ? resolve(xhr) : reject(xhr); };
+                    xhr.onerror = function() { reject(xhr); };
+                    xhr.open(method, url, true);
+                    xhr.send();
+                });
+            };
+            var checkJob = function(method) {
+                return function() {
+                    var f = document.querySelector('form');
+                    request(method, '?postcode=' + escape(f.postcode.value).replace('%20', '+')
+                                  + '&huisnr=' + escape(f.huisnr.value)
+                                  + '&toevoeging=' + escape(f.toevoeging.value)
+                                  + '&jaar=' + escape(f.jaar.value))
+                        .then(function(xhr) {
+                            if (xhr.status == 200) {
+                                window.location = xhr.responseURL;
+                            }
+                            else {
+                                window.setTimeout(checkJob('HEAD'), 2000);
+                            }
+                        })
+                        .catch(function(xhr) {
+                            console.log('error!', xhr);
+                            if (xhr.responseText) {
+                                alert(xhr.responseText);
+                                document.querySelector('#submit').disabled = false;
+                            }
+                            else {
+                                window.setTimeout(checkJob('GET'), 100);
+                            }
+                        });
+                };
+            };
+            document.addEventListener('DOMContentLoaded', function(e) {
+                document.querySelector('#submit').addEventListener('click', function(e) {
+                    if (document.querySelector('form').checkValidity()) {
+                        e.preventDefault();
+                        checkJob('HEAD')();
+                        document.querySelector('#submit').disabled = true;
+                    }
+                });
+
+                document.querySelector('form input[name=jaar]').min = 2010;
+                document.querySelector('form input[name=jaar]').max = (new Date()).getFullYear() + 1;
+                document.querySelector('form input[name=jaar]').value= (new Date()).getFullYear();
+            });
+        //]]></script>
+        <style>
+            label { display: block; margin-top: 1em; }
+        </style>
+    </head>
+    <body>
+        <h1>Omrin HTML Afvalkalender</h1>
+        <em>Gegarandeerd vrij van plugins en apps!</em>
+
+        <form method="get">
+            <div>
+                <label for="postcode">Postcode</label>
+                <input name="postcode" type="text"
+                       pattern="[0-9]{4} ?[a-zA-Z]{2}" minlength="6" maxlength="7"
+                       placeholder="1234 AB"
+                       title="Formaat: 4 cijfers gevolgd door 2 letters" />
+            </div>
+
+            <div>
+                <label for="huisnr">Huisnummer</label>
+                <input name="huisnr" type="number"
+                       minlength="1"
+                       placeholder="42" />
+            </div>
+
+            <div>
+                <label for="toevoeging">Toevoeging</label>
+                <input name="toevoeging" type="text"
+                       pattern="[a-zA-Z0-9]*"
+                       placeholder="A"
+                       title="Formaat: letters en cijfers" />
+            </div>
+
+            <div>
+                <label for="jaar">Jaar</label>
+                <input name="jaar" type="number" />
+            </div>
+
+            <div>
+                <br/>
+                <button type="submit" id="submit">Opvragen</button>
+            </div>
+        </form>
+    </body>
+</html>
