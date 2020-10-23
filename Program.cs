@@ -142,6 +142,7 @@ namespace Stomrin
 
             var sequence = 0;
             var adres = $"{aansluiting.Straat} {aansluiting.Huistnummer}{aansluiting.Toevoeging}, {aansluiting.Woonplaats}".iCalendarEscape();
+            var utcnow = $"{DateTime.UtcNow.ToISOString()}Z";
 
             yield return $"BEGIN:VCALENDAR";
             yield return $"VERSION:2.0";
@@ -168,7 +169,7 @@ namespace Stomrin
                     yield return $"UID:{aansluiting.AansluitingID}-{jaar}-{sequence}@stomrin.nl";
                     yield return $"DTSTART;TZID=Europe/Amsterdam:{time.ToISOString()}";
                     yield return $"DTEND;TZID=Europe/Amsterdam:{time.AddHours(1).ToISOString()}";
-                    yield return $"DTSTAMP;TZID=Europe/Amsterdam:{time.ToISOString()}";
+                    yield return $"DTSTAMP:{utcnow}";
                     yield return $"SUMMARY:{groep.Omschrijvging.iCalendarEscape()}";
                     yield return $"DESCRIPTION:{groep.Info.Replace("\r", "").Replace("\n", "").iCalendarEscape()}";
                     yield return $"END:VEVENT";
