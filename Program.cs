@@ -226,6 +226,7 @@ namespace Stomrin
             Console.WriteLine($"{filename}: done");
         }
 
+        // TODO: handle jobs that were created before this thing started
         static FileSystemWatcher CreateWatcher()
         {
             var watcher = new FileSystemWatcher(Configuration.WATCH_DIR);
