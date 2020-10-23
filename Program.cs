@@ -113,14 +113,19 @@ namespace Stomrin
             return new XElement(x + "html",
                 new XElement(x + "head",
                     new XElement(x + "title", $"Afvalkalender {jaar}"),
-                    new XElement(x + "meta", new XAttribute("name", "viewport"), new XAttribute("content", "width=device-width, initial-scale=1"))),
+                    new XElement(x + "meta", new XAttribute("name", "viewport"), new XAttribute("content", "width=device-width, initial-scale=1")),
+                    new XElement(x + "style",
+                        ".flex { display:flex; flex-wrap:wrap; }",
+                        ".flex>div { max-width: 20em; margin-right:5px; }"
+                    )),
                 new XElement(x + "body",
                     new XElement(x + "h1", $"Afvalkalender {jaar}"),
                     new XElement(x + "p", $"{aansluiting.Straat} {aansluiting.Huistnummer}{aansluiting.Toevoeging}, {aansluiting.Postcode} {aansluiting.Woonplaats}"),
                     new XElement(x + "p",
                         "Link naar iCal bestand om toe te voegen in Google/Outlook/iCloud/Android: ",
                         new XElement(x + "a", new XAttribute("href", icalFilename), icalFilename)),
-                    kalender.Groepen.Select(CreateHTMLCalendar)));
+                    new XElement(x + "div", new XAttribute("class", "flex"),
+                        kalender.Groepen.Select(CreateHTMLCalendar))));
         }
 
         static IEnumerable<string> CreateICS(int jaar, Omrin.AansluitingValidatie aansluiting, Omrin.KalenderObject kalender)
