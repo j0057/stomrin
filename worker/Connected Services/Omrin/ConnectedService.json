@@ -1,0 +1,23 @@
+﻿{
+  "ProviderId": "Microsoft.VisualStudio.ConnectedService.Wcf",
+  "Version": "15.0.30730.948",
+  "GettingStartedDocument": {
+    "Uri": "https://go.microsoft.com/fwlink/?linkid=858517"
+  },
+  "ExtendedData": {
+    "inputs": [
+      "http://127.0.0.1:7980/burgerportal/ServiceKalender.svc"
+    ],
+    "collectionTypes": [
+      "System.Array",
+      "System.Collections.Generic.Dictionary`2"
+    ],
+    "internalTypeAccess": true,
+    "namespaceMappings": [
+      "*, Omrin"
+    ],
+    "sync": true,
+    "targetFramework": "netcoreapp3.0",
+    "typeReuseMode": "All"
+  }
+}
