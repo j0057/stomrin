@@ -120,7 +120,7 @@ namespace Stomrin
                     new XElement(x + "h1", title),
                     new XElement(x + "p", adres),
                     new XElement(x + "p",
-                        "Link naar iCal bestand om toe te voegen in Google/Outlook/iCloud/Android:",
+                        "Link naar iCal bestand om toe te voegen in Google/Outlook/iCloud/Android: ",
                         new XElement(x + "a", new XAttribute("href", icalFilename), icalFilename)),
                     kalender.Groepen.Select(CreateHTMLCalendar)));
         }
