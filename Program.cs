@@ -72,13 +72,15 @@ namespace Stomrin
         {
             var client = new Omrin.Service1Client(Omrin.Service1Client.EndpointConfiguration.CustomBinding_Service1, Configuration.SERVICE_URL) as Omrin.Service1;
 
-            Console.WriteLine($"{filename}: ValidateAansluiting {postcode} {huisnummer} {toevoeging}");
+            Console.WriteLine($"{filename}: calling ValidateAansluiting {postcode} {huisnummer} {toevoeging}");
             var aansluiting = client.ValidateAansluiting(postcode, huisnummer, toevoeging);
 
             Console.WriteLine($"{filename}: aansluitingID {aansluiting.AansluitingID} is {aansluiting.Straat} {aansluiting.Huistnummer}{aansluiting.Toevoeging} in {aansluiting.Woonplaats}");
 
-            Console.WriteLine($"{filename}: GetKalender {aansluiting.AansluitingID} {jaar}");
+            Console.WriteLine($"{filename}: calling GetKalender {aansluiting.AansluitingID} {jaar}");
             var kalender = client.GetKalender(aansluiting.AansluitingID, jaar);
+
+            Console.WriteLine($"{filename}: {kalender.Omschrijving}");
 
             if (aansluiting.AansluitingID == -1 || kalender == null || kalender.Groepen == null)
             {
@@ -249,6 +251,7 @@ namespace Stomrin
             Console.WriteLine("Stomrin worker starting");
             Console.WriteLine($"Watch dir: {Configuration.WATCH_DIR}");
             Console.WriteLine($"Service URL: {Configuration.SERVICE_URL}");
+            Console.WriteLine($"Current directory: {Environment.CurrentDirectory}");
 
             using (var watcher = CreateWatcher())
             {
