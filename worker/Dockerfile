@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS build
+FROM j0057.azurecr.io/dotnet/core/sdk:3.1-alpine AS build
 WORKDIR /src
 
 COPY *.csproj .
@@ -8,7 +8,8 @@ COPY *.cs .
 COPY ["Connected Services", "."]
 RUN dotnet publish -c release -o /app --no-restore
 
-FROM mcr.microsoft.com/dotnet/core/runtime:3.1-alpine
+FROM j0057.azurecr.io/dotnet/core/runtime:3.1-alpine
 WORKDIR /app
+USER 100:101
 COPY --from=build /app .
 ENTRYPOINT ["./stomrin-worker"]
